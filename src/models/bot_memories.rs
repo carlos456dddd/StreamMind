@@ -12,7 +12,7 @@ pub struct BotMemories {
     pub relevance_score: f32,
     pub memory_source: MemorySource,
     pub source_name: Option<String>,
-    pub created_at: chrono::NaiveDateTime,
+    pub created_at: chrono::NaiveDateTime,  
 }
 
 #[derive(Debug, Clone, sqlx::Type, serde::Serialize, serde::Deserialize, PartialEq)]
@@ -27,8 +27,8 @@ pub enum MemoryType {
 #[derive(Debug, Clone, sqlx::Type, serde::Serialize, serde::Deserialize, PartialEq)]
 #[sqlx(type_name = "VARCHAR", rename_all = "snake_case")]
 pub enum MemorySource {
-    Neutral,
-    Positive,
-    Negative,
-    StreamInfo,
+    Streamer,
+    Bot,
+    Chat,
+    System,
 }

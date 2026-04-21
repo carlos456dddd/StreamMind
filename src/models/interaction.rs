@@ -1,4 +1,3 @@
-use chrono;
 use serde;
 use sqlx;
 
@@ -11,10 +10,9 @@ pub struct Interaction {
     pub sender_name: Option<String>,
     pub content: Option<String>,
     pub response_bot_id: Option<String>,
+    pub filter_desition: String,
     pub response_content: Option<String>,
-    //
     pub filter_reason: Option<String>,
-    pub created_at: chrono::NaiveDateTime,
 }
 
 #[derive(Debug, Clone, serde::Deserialize, serde::Serialize, sqlx::Type, PartialEq)]

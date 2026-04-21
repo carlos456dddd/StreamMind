@@ -4,7 +4,7 @@ use sqlx;
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, sqlx::FromRow)]
 pub struct BotMetrics {
-    pub id: u128,
+    pub id: u64,
     pub bot_id: String,
     pub session_id: String,
     pub ctx_tokens_used: Option<u32>,

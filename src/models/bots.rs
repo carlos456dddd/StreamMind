@@ -27,7 +27,8 @@ pub struct Bot {
     pub voide_id: String,
     pub model_name: String,
     pub system_prompt: String,
-    pub stats: PersonalityStats,
+    #[sqlx(json)]
+    pub personality_stats: PersonalityStats,
     pub max_ctx_tokens: i32,
     pub is_ative: bool,
     pub created_at: chrono::NaiveDateTime
