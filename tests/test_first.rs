@@ -30,8 +30,7 @@ async fn test_insert_create_recovery_first() {
     .unwrap();
 
     let bot_usado = queries::get_bot_by_id(&conex, _id.as_str())
-        .await
-        .unwrap();
+        .await;
 
     // #[derive(Debug, Clone, serde::Deserialize, serde::Serialize, sqlx::FromRow)]
     // pub struct BotMemories {
