@@ -2,7 +2,7 @@ use chrono;
 use serde;
 use sqlx;
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, sqlx::FromRow)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize,PartialEq, sqlx::FromRow)]
 pub struct BotMetrics {
     pub id: u64,
     pub bot_id: String,
