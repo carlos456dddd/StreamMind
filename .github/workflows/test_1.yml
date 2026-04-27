@@ -1,4 +1,4 @@
-name: Test_rust
+name: Rust
 
 on:
   push:
@@ -34,28 +34,19 @@ jobs:
       - uses: actions/checkout@v4
 
       # ─── Cache de Cargo ───
-      - name: Cache cargo registry
+      - name: Cache cargo
         uses: actions/cache@v4
         with:
-          path: ~/.cargo/registry
-          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
-      - name: Cache cargo index
-        uses: actions/cache@v4
-        with:
-          path: ~/.cargo/git
-          key: ${{ runner.os }}-cargo-git-${{ hashFiles('**/Cargo.lock') }}
+      - name: Check Rust version
+        run: rustc --version && cargo --version
 
-      - name: Cache cargo build
-        uses: actions/cache@v4
-        with:
-          path: target
-          key: ${{ runner.os }}-cargo-build-${{ hashFiles('**/Cargo.lock') }}
-
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
-
-      # ─── Esperar a que MySQL esté listo (por si acaso) ───
+      # ─── Esperar a que MySQL esté listo ───
       - name: Wait for MySQL
         run: |
           for i in {1..30}; do
@@ -63,26 +54,23 @@ jobs:
             sleep 1
           done
 
-      # ─── Migraciones (si usas sqlx, Diesel, SeaORM, etc.) ───
-      # Ejemplo con sqlx-cli:
+      # ─── Migraciones ANTES del build ───
+      # Necesarias porque sqlx macros validan contra el schema real
       - name: Install sqlx-cli
         run: cargo install sqlx-cli --no-default-features --features mysql
+
       - name: Run migrations
         run: sqlx migrate run
         env:
           DATABASE_URL: ${{ env.DATABASE_URL }}
 
-      # Ejemplo con Diesel:
-      # - name: Install diesel_cli
-      #   run: cargo install diesel_cli --no-default-features --features mysql
-      # - name: Run migrations
-      #   run: diesel migration run
-      #   env:
-      #     DATABASE_URL: ${{ env.DATABASE_URL }}
-
+      # ─── Build con DATABASE_URL (obligatorio para macros sqlx) ───
       - name: Build
         run: cargo build --verbose
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL }}
 
+      # ─── Tests ───
       - name: Run tests
         run: cargo test --verbose
         env:
