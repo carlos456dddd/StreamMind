@@ -1,0 +1,89 @@
+name: Test_rust
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+env:
+  CARGO_TERM_COLOR: always
+  DATABASE_URL: mysql://testuser:testpass@localhost:3306/testdb
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: rootpass
+          MYSQL_DATABASE: testdb
+          MYSQL_USER: testuser
+          MYSQL_PASSWORD: testpass
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ─── Cache de Cargo ───
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache cargo index
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/git
+          key: ${{ runner.os }}-cargo-git-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache cargo build
+        uses: actions/cache@v4
+        with:
+          path: target
+          key: ${{ runner.os }}-cargo-build-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-action@stable
+
+      # ─── Esperar a que MySQL esté listo (por si acaso) ───
+      - name: Wait for MySQL
+        run: |
+          for i in {1..30}; do
+            mysqladmin ping -h localhost -P 3306 --silent && break
+            sleep 1
+          done
+
+      # ─── Migraciones (si usas sqlx, Diesel, SeaORM, etc.) ───
+      # Ejemplo con sqlx-cli:
+      - name: Install sqlx-cli
+        run: cargo install sqlx-cli --no-default-features --features mysql
+      - name: Run migrations
+        run: sqlx migrate run
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL }}
+
+      # Ejemplo con Diesel:
+      # - name: Install diesel_cli
+      #   run: cargo install diesel_cli --no-default-features --features mysql
+      # - name: Run migrations
+      #   run: diesel migration run
+      #   env:
+      #     DATABASE_URL: ${{ env.DATABASE_URL }}
+
+      - name: Build
+        run: cargo build --verbose
+
+      - name: Run tests
+        run: cargo test --verbose
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL }}
