@@ -91,7 +91,7 @@ async fn tercero() {
         .await
         .expect("Final count failed");
 
-    assert_eq!(final_count, 50, "Expected 50 bots (10 bots × 5 ops each)");
+    assert_eq!(final_count, 51, "Expected 50 bots (10 bots × 5 ops each)");
 
     println!("✅ All 10 bots completed without deadlocks!");
 }

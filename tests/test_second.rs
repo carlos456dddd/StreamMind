@@ -9,14 +9,18 @@ async fn segundo() {
     
     //For the momento, I only use the fn ->
 
-    let bot_memories = BotMemories{ id: "id_v0".to_string(),bot_id: Some("prueba_01".to_string()), session_id: Some("prueba_01".to_string()), content: "Una_cosa_barbara".to_string(), memory_type: models::bot_memories::MemoryType::Neutral, relevance_score: Some(5.0), memory_source: models::bot_memories::MemorySource::Bot, source_name: Some("Buenos_resultados_v0".to_string()), created_at: Some(chrono::Utc::now().naive_utc())};
-
+    let bot_memories = BotMemories{ id: "id_v0_0276566183".to_string(),bot_id: Some("prue516161ba_01_b2".to_string()), session_id: Some("prueba6566_01_fd".to_string()), content: "Una_cosa_b311arbargga".to_string(), memory_type: models::bot_memories::MemoryType::Neutral, relevance_score: Some(5.0), memory_source: models::bot_memories::MemorySource::Bot, source_name: Some("Buenos_resultadogggs6556_v0".to_string()), created_at: Some(chrono::Utc::now().naive_utc())};
+    
     let inser_memory = queries::insert_memory(&conex, &bot_memories).await.unwrap();
 
-    let query_info  = queries::get_stream_info_memories(&conex, &inser_memory).await;
+    let id_parseao = bot_memories.bot_id.clone().unwrap();
+    let str_value = id_parseao.as_str();
+
+    let query_info  = queries::get_stream_info_memories(&conex, str_value).await;
+
+    assert_eq!(bot_memories.id, query_info[0].id);
     
-    // let primero = !query_info[0];
-    assert!(!query_info.is_empty(), "Memories should not be empty");
+   
 }
 
 //      let fecha = NaiveDate::from_ymd_opt(2026, 4, 23).unwrap()
