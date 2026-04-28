@@ -1,0 +1,77 @@
+name: Rust
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+env:
+  CARGO_TERM_COLOR: always
+  DATABASE_URL: mysql://testuser:testpass@localhost:3306/testdb
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: rootpass
+          MYSQL_DATABASE: testdb
+          MYSQL_USER: testuser
+          MYSQL_PASSWORD: testpass
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ─── Cache de Cargo ───
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Check Rust version
+        run: rustc --version && cargo --version
+
+      # ─── Esperar a que MySQL esté listo ───
+      - name: Wait for MySQL
+        run: |
+          for i in {1..30}; do
+            mysqladmin ping -h localhost -P 3306 --silent && break
+            sleep 1
+          done
+
+      # ─── Migraciones ANTES del build ───
+      # Necesarias porque sqlx macros validan contra el schema real
+      - name: Install sqlx-cli
+        run: cargo install sqlx-cli --no-default-features --features mysql
+
+      - name: Run migrations
+        run: sqlx migrate run
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL }}
+
+      # ─── Build con DATABASE_URL (obligatorio para macros sqlx) ───
+      - name: Build
+        run: cargo build --verbose
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL }}
+
+      # ─── Tests ───
+      - name: Run tests
+        run: cargo test --verbose
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL }}
