@@ -2,8 +2,12 @@
 name = "StremMind"
 version = "0.1.0"
 edition = "2024"
+[workspace]
+members = [ "streammind-config","streammind-db"]
 
-[dependencies]
+[workspace.dependencies]
+streammind-db = {path = "../streammind-db"}
+streammind_config = {path = "../streammind_config"}
 sqlx = { version = "0.8", features = [ "mysql", "runtime-tokio-rustls", "chrono", "uuid", "migrate" ] }
 uuid = { version = "1", features = ["v4", "serde"] }
 chrono = { version = "0.4", features = ["serde"] }
