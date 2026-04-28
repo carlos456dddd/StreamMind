@@ -60,7 +60,7 @@ jobs:
         run: cargo install sqlx-cli --no-default-features --features mysql
 
       - name: Run migrations
-        run: sqlx migrate run
+        run: sqlx migrate run --source streammind-db/migrations
         env:
           DATABASE_URL: ${{ env.DATABASE_URL }}
 
