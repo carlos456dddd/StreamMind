@@ -1,0 +1,82 @@
+
+[stream]
+streamer_name   = "TuNombre"
+stream_title    = "Mi Stream de Rust y IA"
+game_or_topic   = "Programación en Rust"          
+schedule        = [                               
+    "Lunes 20:00 - 22:00 PET",
+    "Miércoles 20:00 - 22:00 PET",
+    "Viernes 21:00 - 23:00 PET",
+]
+timezone        = "America/Lima"
+
+[database]
+url                  = "DATABASE_URL" 
+pool_size            = 10          
+connect_timeout_secs = 5           
+run_migrations       = true        
+
+
+[ollama]
+host                 = "HOST_OLLAMA"
+default_model        = "llama3.2:3b"   
+request_timeout_secs = 60              
+max_tokens           = 300             
+temperature          = 0.8             
+keep_alive           = "10m"           
+
+
+[youtube]
+api_key              = "API_KEY"
+live_chat_id         = "LIVE_CHAT_ID"
+streamer_channel_id  = "CHANNEL_ID"
+poll_interval_ms     = 6000              
+max_results_per_poll = 50      
+ignore_bots          = true    
+
+
+
+[tts]
+engine               = "piper"
+piper_binary         = "/src/models"     
+piper_models_dir     = "/src/models/model_con"            
+elevenlabs_api_key   = ""                          
+audio_output_device  = "default"                   
+audio_queue_timeout_ms = 30000                     
+
+[stt]
+enabled              = true
+whisper_model        = "base"
+language             = "es"            
+silence_threshold_ms = 1200            
+min_speech_ms        = 300             
+vad_enabled          = true            
+
+
+[bot_manager]
+max_bots              = 10           
+max_bot_to_bot_turns  = 3              
+bot_cooldown_ms       = 3000           
+response_timeout_ms   = 15000         
+bots_config_dir       = "./config/bots" 
+streamer_priority     = true           
+broadcast_bot_messages = true          
+
+
+
+[monitor]
+metrics_interval_ms   = 1000          
+log_rejected_messages = true          
+max_event_log_size    = 200           
+show_token_streaming  = true          
+window_width          = 1280
+window_height         = 800
+theme                 = "dark"        
+
+
+[log]
+level                 = "info"
+log_to_file           = false
+log_dir               = "./logs"
+pretty_print          = true          
+filter                = ""            
