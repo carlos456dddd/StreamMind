@@ -3,8 +3,8 @@ use std::collections::{HashMap, HashSet};
 use anyhow::anyhow;
 use chrono::Timelike;
 use sqlx::{
-    FromRow, MySqlPool,
-    types::{chrono::Utc, uuid},
+    FromRow,
+    types::uuid,
 };
 use streammind_db::{
     self,
@@ -140,7 +140,7 @@ pub async fn sync_bots_to_db<'a>(
             .execute(_pool)
             .await;
         match a {
-            Ok(b) => () ,
+            Ok(_) => () ,
             Err(e) => _errores.push(anyhow!("Error insercion: {:?} | Tipo: {:?}", &i, e))
         }
     }
@@ -253,7 +253,7 @@ pub async fn sync_bots_to_db<'a>(
         }
 
         let _prompt = match &f.system_prompt {
-            Some(a) => true,
+            Some(_) => true,
             None => false,
         };
 
@@ -297,7 +297,7 @@ pub async fn sync_bots_to_db<'a>(
                 let operate = sql_query.execute(_pool).await;
 
                 match operate {
-                    Ok(d) => {
+                    Ok(_) => {
                         let g = get_bot_by_id(_pool, &f.id).await;
                         bots_b.push(g);
                     }
